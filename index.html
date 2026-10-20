@@ -2,243 +2,147 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Visual Training PWA</title>
-    <!-- Tailwind CSS for clean, responsive UI styling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Training App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Web App Manifest placeholder -->
-    <link id="manifest-link" rel="manifest">
-    <!-- Meta tags for PWA mobile experience -->
-    <meta name="theme-color" content="#0f172a">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
-        /* Prevent selection for smooth touch interaction */
+        /* Prevent elastic scroll / pull-to-refresh on mobile */
         body {
-            user-select: none;
-            -webkit-user-select: none;
+            overscroll-behavior-y: none;
             touch-action: manipulation;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
-        /* Responsive image box fitting without scrolling */
-        .img-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 0.5rem;
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 h-screen flex flex-col overflow-hidden select-none">
+<body class="bg-slate-950 text-white h-[100dvh] w-screen flex flex-col overflow-hidden select-none m-0 p-0">
 
-    <!-- Top Banner / Navigation Section -->
-    <header class="w-full h-16 bg-slate-800/90 border-b border-slate-700/60 relative flex items-center justify-between px-4 sm:px-8 shrink-0 z-10 shadow-md">
-        <div class="flex items-center space-x-2">
-            <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-            <h1 class="text-lg font-semibold tracking-wide text-slate-200 hidden sm:block">Visual Trainer</h1>
-        </div>
-
-        <!-- Centered Next Button -->
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <button id="nextBtn" class="px-8 py-2.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:scale-95 text-white font-bold rounded-lg shadow-md transition-all duration-150 flex items-center justify-center space-x-2 text-lg cursor-pointer">
-                <span>NEXT</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
-            </button>
-        </div>
-
-        <!-- Status indicator for PWA -->
-        <div class="text-xs text-slate-400 font-mono">
-            <span id="pwaStatus">Online</span>
-        </div>
+    <!-- TOP PART: Horizontally long, vertically short, with centered Next button -->
+    <header class="relative w-full h-[12vh] min-h-[60px] bg-slate-900 border-b border-slate-800 flex items-center justify-center px-4">
+        <button id="next-btn" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-lg px-8 py-3 rounded-xl shadow-lg transition-transform active:scale-95 cursor-pointer">
+            NEXT
+        </button>
     </header>
 
-    <!-- Main Content Area: Split Left and Right -->
-    <main class="flex-1 grid grid-cols-2 gap-2 sm:gap-4 p-2 sm:p-4 h-[calc(100vh-4rem)] overflow-hidden">
-        
-        <!-- Left Panel -->
-        <section class="bg-slate-800/40 rounded-xl border border-slate-700/50 p-3 flex flex-col h-full shadow-inner overflow-hidden">
-            <!-- Upper Area: Text Display -->
-            <div class="py-2 sm:py-3 flex items-center justify-center border-b border-slate-700/30 shrink-0">
-                <span id="textLeft" class="text-4xl sm:text-6xl font-black tracking-widest text-indigo-400 drop-shadow-sm">
-                    --
-                </span>
+    <!-- BOTTOM PART: Divided into Left and Right sections -->
+    <main class="flex-1 w-full grid grid-cols-2 h-[88vh]">
+
+        <!-- LEFT SECTION -->
+        <section class="flex flex-col h-full border-r border-slate-800/60 p-3 gap-3">
+            <!-- Top: Text Box -->
+            <div id="left-text" class="w-full h-[18%] bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-3xl sm:text-5xl font-black tracking-wider text-blue-400 shadow-inner">
+                --
             </div>
-            <!-- Lower Area: Image Display -->
-            <div class="flex-1 min-h-0 pt-3 flex items-center justify-center overflow-hidden">
-                <div class="img-container">
-                    <img id="imgLeft" src="" alt="Left Visual Training" class="hidden" onerror="handleImageError(this)">
-                    <div id="imgLeftFallback" class="hidden text-slate-500 text-xs text-center p-2">Image not found</div>
-                </div>
+            <!-- Bottom: Image Display -->
+            <div class="w-full h-[82%] bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                <img id="left-img" src="" alt="Training Visual" class="w-full h-full object-fill block">
             </div>
         </section>
 
-        <!-- Right Panel -->
-        <section class="bg-slate-800/40 rounded-xl border border-slate-700/50 p-3 flex flex-col h-full shadow-inner overflow-hidden">
-            <!-- Upper Area: Text Display -->
-            <div class="py-2 sm:py-3 flex items-center justify-center border-b border-slate-700/30 shrink-0">
-                <span id="textRight" class="text-4xl sm:text-6xl font-black tracking-widest text-indigo-400 drop-shadow-sm">
-                    --
-                </span>
+        <!-- RIGHT SECTION -->
+        <section class="flex flex-col h-full p-3 gap-3">
+            <!-- Top: Text Box -->
+            <div id="right-text" class="w-full h-[18%] bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-3xl sm:text-5xl font-black tracking-wider text-emerald-400 shadow-inner">
+                --
             </div>
-            <!-- Lower Area: Image Display -->
-            <div class="flex-1 min-h-0 pt-3 flex items-center justify-center overflow-hidden">
-                <div class="img-container">
-                    <img id="imgRight" src="" alt="Right Visual Training" class="hidden" onerror="handleImageError(this)">
-                    <div id="imgRightFallback" class="hidden text-slate-500 text-xs text-center p-2">Image not found</div>
-                </div>
+            <!-- Bottom: Image Display -->
+            <div class="w-full h-[82%] bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                <img id="right-img" src="" alt="Training Visual" class="w-full h-full object-fill block">
             </div>
         </section>
 
     </main>
 
-    <!-- Logic and PWA Scripts -->
     <script>
-        // Available positions/codes
-        const CODES = ["FR", "FL", "BR", "BL"];
-        const TOTAL_IMAGES = 41;
+        // PWA Dynamic Manifest & Service Worker Injection
+        const manifestData = {
+            "name": "Training App",
+            "short_name": "TrainApp",
+            "start_url": "./index.html",
+            "display": "standalone",
+            "background_color": "#020617",
+            "theme_color": "#020617",
+            "icons": []
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        const linkTag = document.createElement('link');
+        linkTag.rel = 'manifest';
+        linkTag.href = manifestURL;
+        document.head.appendChild(linkTag);
 
-        // Elements
-        const textLeft = document.getElementById('textLeft');
-        const textRight = document.getElementById('textRight');
-        const imgLeft = document.getElementById('imgLeft');
-        const imgRight = document.getElementById('imgRight');
-        const nextBtn = document.getElementById('nextBtn');
-        const pwaStatus = document.getElementById('pwaStatus');
-
-        /**
-         * Helper to get a random integer in range [min, max]
-         */
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', (e) => {
+                    e.waitUntil(
+                        caches.open('train-app-v1').then((cache) => {
+                            const files = ['./index.html'];
+                            for(let i=1; i<=41; i++) {
+                                files.push('./images/' + i + '.png');
+                            }
+                            return cache.addAll(files).catch(() => {});
+                        })
+                    );
+                    self.skipWaiting();
+                });
+                self.addEventListener('activate', (e) => {
+                    e.waitUntil(clients.claim());
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(
+                        caches.match(e.request).then((cachedResponse) => {
+                            return cachedResponse || fetch(e.request).catch(() => {});
+                        })
+                    );
+                });
+            `;
+            const swBlob = new Blob([swCode], { type: 'text/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log('SW registration failed:', err));
         }
 
-        /**
-         * Generates the next training combination
-         */
-        function loadNextCombination() {
-            // 1. Pick left text code
-            const leftIndex = getRandomInt(0, CODES.length - 1);
-            const leftCode = CODES[leftIndex];
+        // Training App Core Logic
+        const directions = ["FR", "FL", "BR", "BL"];
 
-            // 2. Pick right text code (MUST NOT be equal to left code)
-            const remainingCodes = CODES.filter(code => code !== leftCode);
-            const rightCode = remainingCodes[getRandomInt(0, remainingCodes.length - 1)];
+        const nextBtn = document.getElementById('next-btn');
+        const leftText = document.getElementById('left-text');
+        const rightText = document.getElementById('right-text');
+        const leftImg = document.getElementById('left-img');
+        const rightImg = document.getElementById('right-img');
 
-            // 3. Pick images (can be the same or different, between 1 and 41)
-            const leftImgNum = getRandomInt(1, TOTAL_IMAGES);
-            const rightImgNum = getRandomInt(1, TOTAL_IMAGES);
-
-            // Update Text
-            textLeft.textContent = leftCode;
-            textRight.textContent = rightCode;
-
-            // Update Images
-            setImage(imgLeft, `images/${leftImgNum}.png`, 'imgLeftFallback');
-            setImage(imgRight, `images/${rightImgNum}.png`, 'imgRightFallback');
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        function setImage(imgEl, src, fallbackId) {
-            const fallbackEl = document.getElementById(fallbackId);
-            fallbackEl.classList.add('hidden');
-            imgEl.classList.remove('hidden');
-            imgEl.src = src;
+        function generateCombination() {
+            // 1. Pick Left Text
+            const lText = getRandomElement(directions);
+
+            // 2. Pick Right Text ensuring it's not the same as Left Text
+            let rText;
+            do {
+                rText = getRandomElement(directions);
+            } while (rText === lText);
+
+            // 3. Pick Random Images (1 to 41)
+            const lImgNum = Math.floor(Math.random() * 41) + 1;
+            const rImgNum = Math.floor(Math.random() * 41) + 1;
+
+            // 4. Update DOM Elements
+            leftText.textContent = lText;
+            rightText.textContent = rText;
+            leftImg.src = `images/${lImgNum}.png`;
+            rightImg.src = `images/${rImgNum}.png`;
         }
 
-        function handleImageError(imgEl) {
-            imgEl.classList.add('hidden');
-            const fallbackEl = document.getElementById(imgEl.id + 'Fallback');
-            if (fallbackEl) {
-                fallbackEl.textContent = `Missing: ${imgEl.getAttribute('src')}`;
-                fallbackEl.classList.remove('hidden');
-            }
-        }
-
-        // Setup Event Listeners
-        nextBtn.addEventListener('click', loadNextCombination);
-
-        // Keyboard shortcuts: Spacebar or Enter triggers Next
+        // Event Listeners for Clicking Next or pressing Space/Enter
+        nextBtn.addEventListener('click', generateCombination);
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'Enter') {
                 e.preventDefault();
-                loadNextCombination();
+                generateCombination();
             }
         });
 
-        // Initialize on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            loadNextCombination();
-            setupPWA();
-        });
-
-        // Offline / Online Status Handling
-        window.addEventListener('online', () => pwaStatus.textContent = 'Online');
-        window.addEventListener('offline', () => pwaStatus.textContent = 'Offline');
-
-        /**
-         * Dynamic Service Worker & Manifest generation for PWA offline usability
-         */
-        function setupPWA() {
-            // 1. Create Web Manifest dynamically via Blob URL
-            const manifestData = {
-                name: "Visual Training App",
-                short_name: "VisualTrainer",
-                start_url: "./index.html",
-                display: "standalone",
-                background_color: "#0f172a",
-                theme_color: "#0f172a",
-                icons: [
-                    {
-                        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%234f46e5'/><text x='50' y='60' font-size='40' font-weight='bold' text-anchor='middle' fill='white'>VT</text></svg>",
-                        sizes: "192x192 512x512",
-                        type: "image/svg+xml"
-                    }
-                ]
-            };
-            const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-            document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
-
-            // 2. Register Service Worker using Blob for offline caching
-            if ('serviceWorker' in navigator) {
-                const swCode = `
-                    const CACHE_NAME = 'vt-pwa-v1';
-                    const urlsToCache = ['./', './index.html'];
-
-                    self.addEventListener('install', event => {
-                        event.waitUntil(
-                            caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
-                        );
-                    });
-
-                    self.addEventListener('fetch', event => {
-                        event.respondWith(
-                            caches.match(event.request).then(response => {
-                                return response || fetch(event.request);
-                            })
-                        );
-                    });
-                `;
-                const swBlob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(swBlob);
-
-                navigator.serviceWorker.register(swUrl)
-                    .then(() => console.log('Service Worker registered successfully.'))
-                    .catch(err => console.warn('Service Worker registration skipped or failed:', err));
-            }
-        }
+        // Run on initial load
+        generateCombination();
     </script>
 </body>
 </html>

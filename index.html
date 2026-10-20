@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Training App</title>
+    <link rel="manifest" href="./manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Prevent elastic scroll / pull-to-refresh on mobile */
         body {
             overscroll-behavior-y: none;
             touch-action: manipulation;
@@ -15,23 +15,20 @@
 </head>
 <body class="bg-slate-950 text-white h-[100dvh] w-screen flex flex-col overflow-hidden select-none m-0 p-0">
 
-    <!-- TOP PART: Horizontally long, vertically short, with centered Next button -->
+    <!-- TOP PART -->
     <header class="relative w-full h-[12vh] min-h-[60px] bg-slate-900 border-b border-slate-800 flex items-center justify-center px-4">
         <button id="next-btn" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-lg px-8 py-3 rounded-xl shadow-lg transition-transform active:scale-95 cursor-pointer">
             NEXT
         </button>
     </header>
 
-    <!-- BOTTOM PART: Divided into Left and Right sections -->
+    <!-- BOTTOM PART -->
     <main class="flex-1 w-full grid grid-cols-2 h-[88vh]">
-
         <!-- LEFT SECTION -->
         <section class="flex flex-col h-full border-r border-slate-800/60 p-3 gap-3">
-            <!-- Top: Text Box -->
             <div id="left-text" class="w-full h-[18%] bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-3xl sm:text-5xl font-black tracking-wider text-blue-400 shadow-inner">
                 --
             </div>
-            <!-- Bottom: Image Display -->
             <div class="w-full h-[82%] bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
                 <img id="left-img" src="" alt="Training Visual" class="w-full h-full object-contain block">
             </div>
@@ -39,63 +36,19 @@
 
         <!-- RIGHT SECTION -->
         <section class="flex flex-col h-full p-3 gap-3">
-            <!-- Top: Text Box -->
             <div id="right-text" class="w-full h-[18%] bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-3xl sm:text-5xl font-black tracking-wider text-emerald-400 shadow-inner">
                 --
             </div>
-            <!-- Bottom: Image Display -->
             <div class="w-full h-[82%] bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
                 <img id="right-img" src="" alt="Training Visual" class="w-full h-full object-contain block">
             </div>
         </section>
-
     </main>
 
     <script>
-        // PWA Dynamic Manifest & Service Worker Injection
-        const manifestData = {
-            "name": "Training App",
-            "short_name": "TrainApp",
-            "start_url": "./index.html",
-            "display": "standalone",
-            "background_color": "#020617",
-            "theme_color": "#020617",
-            "icons": []
-        };
-        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        const linkTag = document.createElement('link');
-        linkTag.rel = 'manifest';
-        linkTag.href = manifestURL;
-        document.head.appendChild(linkTag);
-
+        // Register Service Worker
         if ('serviceWorker' in navigator) {
-            const swCode = `
-                self.addEventListener('install', (e) => {
-                    e.waitUntil(
-                        caches.open('train-app-v1').then((cache) => {
-                            const files = ['./index.html'];
-                            for(let i=1; i<=41; i++) {
-                                files.push('./images/' + i + '.png');
-                            }
-                            return cache.addAll(files).catch(() => {});
-                        })
-                    );
-                    self.skipWaiting();
-                });
-                self.addEventListener('activate', (e) => {
-                    e.waitUntil(clients.claim());
-                });
-                self.addEventListener('fetch', (e) => {
-                    e.respondWith(
-                        caches.match(e.request).then((cachedResponse) => {
-                            return cachedResponse || fetch(e.request).catch(() => {});
-                        })
-                    );
-                });
-            `;
-            const swBlob = new Blob([swCode], { type: 'text/javascript' });
-            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log('SW registration failed:', err));
+            navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
         }
 
         // Training App Core Logic
@@ -112,27 +65,21 @@
         }
 
         function generateCombination() {
-            // 1. Pick Left Text
             const lText = getRandomElement(directions);
-
-            // 2. Pick Right Text ensuring it's not the same as Left Text
             let rText;
             do {
                 rText = getRandomElement(directions);
             } while (rText === lText);
 
-            // 3. Pick Random Images (1 to 41)
             const lImgNum = Math.floor(Math.random() * 41) + 1;
             const rImgNum = Math.floor(Math.random() * 41) + 1;
 
-            // 4. Update DOM Elements
             leftText.textContent = lText;
             rightText.textContent = rText;
             leftImg.src = `images/${lImgNum}.png`;
             rightImg.src = `images/${rImgNum}.png`;
         }
 
-        // Event Listeners for Clicking Next or pressing Space/Enter
         nextBtn.addEventListener('click', generateCombination);
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'Enter') {
@@ -141,7 +88,6 @@
             }
         });
 
-        // Run on initial load
         generateCombination();
     </script>
 </body>

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
     <title>Training App</title>
     <link rel="manifest" href="./manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,7 +18,7 @@
 
     <!-- TOP PART -->
     <header class="relative w-full h-[12vh] min-h-[60px] bg-slate-900 border-b border-slate-800 flex items-center justify-center px-4">
-        <button id="next-btn" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-lg px-8 py-3 rounded-xl shadow-lg transition-transform active:scale-95 cursor-pointer">
+        <button id="next-btn" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-lg px-8 py-3 rounded-xl shadow-lg shadow-blue-900/60">
             NEXT
         </button>
     </header>
@@ -26,7 +27,7 @@
     <main class="flex-1 w-full grid grid-cols-2 h-[88vh]">
         <!-- LEFT SECTION -->
         <section class="flex flex-col h-full border-r border-slate-800/60 p-3 gap-3">
-            <div id="left-text" class="w-full h-[18%] bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-3xl sm:text-5xl font-black tracking-wider text-blue-400 shadow-inner">
+            <div id="left-text" class="w-full h-[18%] bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-3xl sm:text-5xl font-black tracking-wider text-blue-400">
                 --
             </div>
             <div class="w-full h-[82%] bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
@@ -36,7 +37,7 @@
 
         <!-- RIGHT SECTION -->
         <section class="flex flex-col h-full p-3 gap-3">
-            <div id="right-text" class="w-full h-[18%] bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-3xl sm:text-5xl font-black tracking-wider text-emerald-400 shadow-inner">
+            <div id="right-text" class="w-full h-[18%] bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-3xl sm:text-5xl font-black tracking-wider text-emerald-400">
                 --
             </div>
             <div class="w-full h-[82%] bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
@@ -46,13 +47,13 @@
     </main>
 
     <script>
-        // Register Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
+        // Register Service Worker only on secure origins.
+        if ('serviceWorker' in navigator && window.isSecureContext) {
+            navigator.serviceWorker.register('./sw.js').catch((err) => console.log('SW registration failed:', err));
         }
 
         // Training App Core Logic
-        const directions = ["FR", "FL", "BR", "BL"];
+        const directions = ['FR', 'FL', 'BR', 'BL'];
 
         const nextBtn = document.getElementById('next-btn');
         const leftText = document.getElementById('left-text');
